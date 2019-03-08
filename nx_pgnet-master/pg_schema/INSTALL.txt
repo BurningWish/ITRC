@@ -1,0 +1,93 @@
+INSTALL VIA "one-click" .bat
+
+-- Standard install (requires that a pgpass.conf password file has been saved with the correct credentials at the following location):
+
+	- ensure you run the cmd window as postgres user
+
+	- C:\Users\<username>\AppData\Roaming\postgresql\pgpass.conf
+	
+	Run the following command, adjusting the 4 parameters according to your needs, to install the database tables, functions and trigger procedures to your chosen database. The following example would install the network_interdependency schema in to the "empty" database
+	
+	ni_setup_database.bat "localhost" "postgres" "C:\Program Files (x86)\PostgreSQL\9.0\bin\" "empty"
+	
+	Parameters:
+	
+	1 - host name
+	2 - user name
+	3 - postgresql bin folder location
+	4 - database name
+	
+	ni_setup_database.bat calls the following files in this order:
+		
+		/functions/processing/ni_setup_processing_functions.bat
+		/functions/trigger/ni_setup_trigger_functions.bat
+		/functions/tables/ni_setup_tables.bat
+		/functions/generic/ni_setup_generic_functions.bat
+
+INSTALL VIA RUNNING .bat(s) separately		
+		
+-- Alternatively, the setup .bat files can be run individually, simply by supplying the same parameters to each function as was described above in the standard install method.
+	-- Each example listed below is available as a .bat file already, with the prefix "execute_ni_", and with default values for parameters defined. The parameters used can easily be adjusted to fit your individual configuration.
+	
+	processing functions - /FUNCTIONS/PROCESSING/ni_setup_processing_functions.bat "localhost" "postgres" "C:\Program Files (x86)\PostgreSQL\9.0\bin\" "empty"
+
+	Available from: (example_execute_ni_setup_processing_functions.bat)
+	
+	trigger functions - /FUNCTIONS/TRIGGER/ni_setup_trigger_functions.bat "localhost" "postgres" "C:\Program Files (x86)\PostgreSQL\9.0\bin\" "empty"
+	
+	Available from: (example_execute_ni_setup_trigger_functions.bat)
+	
+	setup tables - /TABLES/ni_setup_tables.bat "localhost" "postgres" "C:\Program Files (x86)\PostgreSQL\9.0\bin\" "empty"
+	
+	Available from: (example_execute_ni_setup_tables.bat)
+	
+	generic functions - /FUNCTIONS/GENERIC/ni_setup_generic_functions.bat "localhost" "postgres" "C:\Program Files (x86)\PostgreSQL\9.0\bin\" "empty"
+	
+	Available from: (example_execute_ni_setup_generic_functions.bat)
+
+
+INSTALL VIA COMBINING ALL .sql(s)
+	
+--Alternatively again, it is possible to merge all the individual .sql files (all tables, all functions (generic, processing, trigger) in to separate single .sql for execution on a database i.e. a ni_tables.sql file, a ni_processing_functions.sql, a ni_trigger_functions.sql, and a ni_generic_functions.sql
+
+	--Each .bat file listed below can be executed independently from within each respective folder, OR executed together by running the file execute_ni_combine_sql_files.bat from the top level folder. Either method will create combined .sql files for the processing, trigger and generic functions, as well as the tables that make up the database.
+	
+	
+	merge all processing functions - /FUNCTIONS/PROCESSING/ni_combine_processing_sql_functions.bat - this will generate a file called ni_processing_functions.sql based on merging all processing functions from /FUNCTIONS/PROCESSING/ folder
+	
+	merge all trigger functions - /FUNCTIONS/TRIGGER/ni_combine_trigger_sql_functions.bat - this will generate a file called ni_trigger_functions.sql based on merging all trigger functions from /FUNCTIONS/TRIGGER/ folder
+	
+	merge all generic functions - /FUNCTIONS/GENERIC/ni_combine_generic_sql_functions.bat - this will generate a file called ni_generic_functions.sql based on merging all generic functions from /FUNCTIONS/GENERIC/ folder
+	
+	merge all tables - /TABLES/ni_combine_tables_sql.bat - this will generate a file called ni_tables.sql based on merging all tables from /TABLES/ folder
+	
+	run all as one - execute_ni_combine_sql_files.bat
+	
+	once each of the .sql files has been created (), they can then each by executed on the chosen database. They must be executed in the following order:
+	
+		- ni_processing_functions.sql - PROCESSING FUNCTIONS
+		
+		- ni_trigger_functions.sql - TRIGGER FUNCTIONS
+		
+		- ni_tables.sql - TABLES
+		
+		- ni_generic_functions.sql - GENERIC (admin) FUNCTIONS
+		
+INSTALL VIA pg_restore
+
+-- it is possible to install the database by restoring from the provided .backup file, using the pg_restore tool available within PostgreSQL
+
+-- Open a command line window 
+-- Open Windows Explorer / File System Explorer
+-- Navigate to the bin folder of your PostgreSQL installation
+-- Copy this path e.g. C:\Program Files (x86)\PostgreSQL\9.0\bin
+-- In the command line window, type CD, and then paste the bin folder path, and press Enter 
+-- This will move the user in to the directory where the pg_restore.exe is located. It is this tool that will be used to restore the database schema, and effectively load the database schema in to your chosen destination database
+-- Type the following restore command, adjusting values to your local environment, where specified:
+
+pg_restore -U <insert_postgresql_username> -p <insert_postgresql_port_number> -h <insert_host_name> -d <insert_database_name> <insert_path_to_schema_backup>
+
+pg_restore -U postgres -p 5432 -h localhost -d 'a_spatial_database' C:/SCHEMA/schema.backup
+
+-- Press Enter when you have finished entering this information to install the database.
+		
